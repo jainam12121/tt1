@@ -1,5 +1,4 @@
 import numpy as np
-import onnxruntime
 import soundfile as sf
 from ttstokenizer import TTSTokenizer
 import nltk
@@ -53,5 +52,4 @@ def post_process(output):
     output_file = "out.wav"
     sf.write(output_file, audio_data, 22050)
     return output_file
-
 
