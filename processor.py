@@ -1,12 +1,7 @@
 import onnxruntime
 import soundfile as sf
 import yaml
-import logging
 from ttstokenizer import TTSTokenizer
-
-#Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 # Hardcoded YAML configuration
 yaml_config = """
@@ -122,44 +117,36 @@ yaml_config_dict = yaml.safe_load(yaml_config)
 tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
-    """Pre-processes the input text."""
-    logger.info(f"Input text: {text}")
-    try:
-        tokenized_input = tokenizer(text)
-        logger.info(f"Tokenized input: {tokenized_input}")
-        return tokenized_input
-    except Exception as e:
-        logger.error(f"Error during tokenization: {str(e)}")
-        raise
+    """Pre-processes the input text by tokenizing it."""
+    #print("Tokenizing input text...")
+    tokenized_input = tokenizer(text)
+    #print("Tokenized input:", tokenized_input)
+    return tokenized_input
 
-def post_process(wav):
-    """Post-processes the generated audio."""
-    logger.info(f"Processing audio file: {wav}")
-    try:
-        audio_data = sf.read(wav)[0]  # Extract only the audio data
-        logger.info(f"Audio duration: {len(audio_data) / 22050:.2f} seconds")
-        return audio_data
-    except Exception as e:
-        logger.error(f"Error reading audio file: {str(e)}")
-        raise
+def post_process(audio_data, output_file="out.wav"):
+    """Processes the model output and saves it as a .wav file."""
+  #  print("Saving audio output...")
+    sf.write(output_file, audio_data, 22050)
+    # print(f"Audio saved to {output_file}")
 
 # Main execution
 # try:
+#     # Define input text
+#     input_text = "hi i am jainam"
+
 #     # Tokenize inputs
-#     input_text = "Say something here"
 #     tokenized_inputs = pre_process(input_text)
 
 #     # Generate speech
 #     outputs = model.run(None, {"text": tokenized_inputs})
-    
-#     # Write to file
-#     output_wav = post_process("out1.wav")
 
-#     # Save processed audio
-#     sf.write("out.wav", output_wav, 22050)
-#     logger.info("Audio processing completed successfully.")
+#     # Save the generated audio
+#     audio_data = outputs[0]  # Assuming the output is in the first position
+#     post_process(audio_data)
+
+#     print("Audio processing completed successfully.")
 
 # except Exception as e:
-#     logger.exception(f"An error occurred during audio generation: {str(e)}")
+#     print(f"An error occurred during audio generation: {str(e)}")
 # finally:
-#     logger.info("Script execution finished.")
+#     print("Script execution finished.")
