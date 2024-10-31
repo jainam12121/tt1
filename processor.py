@@ -1,8 +1,10 @@
 import numpy as np
 import soundfile as sf
 from ttstokenizer import TTSTokenizer
+import onnxruntime as ort
 import nltk
 
+# Download NLTK resources
 nltk.download('averaged_perceptron_tagger_eng')
 
 # Hardcoded configuration
@@ -35,8 +37,8 @@ config = {
     }
 }
 
-# Initialize the ONNX model
-
+# Load the ONNX model
+ort_session = ort.InferenceSession(config["tts_model"]["model_path"])
 
 # Create tokenizer
 tokenizer = TTSTokenizer(config["token"]["list"])
@@ -44,7 +46,17 @@ tokenizer = TTSTokenizer(config["token"]["list"])
 def pre_process(text):
     """Tokenizes input text."""
     tokenized_input = tokenizer(text)
-    return tokenized_input
+    sids_input = np.array([25])  # Dummy speaker ID if only one is needed
+    return tokenized_input, sids_input
+
+def run_model(text_input, sids_input):
+    """Runs the ONNX model with two inputs."""
+    inputs = {
+        "text": text_input,
+        "sids": sids_input
+    }
+    output = ort_session.run(None, inputs)
+    return output
 
 def post_process(output):
     """Processes model output and saves it as a .wav file."""
@@ -52,4 +64,3 @@ def post_process(output):
     output_file = "out.wav"
     sf.write(output_file, audio_data, 22050)
     return output_file
-
