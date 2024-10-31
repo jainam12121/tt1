@@ -123,10 +123,13 @@ def pre_process(text):
     #print("Tokenized input:", tokenized_input)
     return tokenized_input
 
-def post_process(audio_data, output_file="out.wav"):
+def post_process(wav):
+    output_file="out.wav"
     """Processes the model output and saves it as a .wav file."""
-  #  print("Saving audio output...")
-    sf.write(output_file, audio_data, 22050)
+    #print("Saving audio output...")
+    sf.write(output_file, wav, 22050)
+    #print(f"Audio saved to {output_file}")
+    return wav  # Return the processed audio data
     # print(f"Audio saved to {output_file}")
 
 # Main execution
