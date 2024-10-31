@@ -1,4 +1,4 @@
-import onnxruntime
+# import onnxruntime
 import soundfile as sf
 import yaml
 from ttstokenizer import TTSTokenizer
