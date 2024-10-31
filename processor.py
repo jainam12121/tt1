@@ -1,58 +1,165 @@
-import numpy as np
+import onnxruntime
 import soundfile as sf
+import yaml
+import logging
 from ttstokenizer import TTSTokenizer
-import nltk
 
-nltk.download('averaged_perceptron_tagger_eng')
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# Hardcoded configuration
-config = {
-    "normalize": {
-        "use_normalize": False
-    },
-    "text_cleaner": {
-        "cleaner_types": ["tacotron"]
-    },
-    "token": {
-        "list": [
-            "<blank>", "<unk>", "AH0", "T", "N", "S", "R", "IH1", "D", "L", ".", "Z", "DH", "K", "W", "M", "AE1", 
-            "EH1", "AA1", "IH0", "IY1", "AH1", "B", "P", "V", "ER0", "F", "HH", "AY1", "EY1", "UW1", "IY0", "AO1", 
-            "OW1", "G", ",", "NG", "SH", "Y", "JH", "AW1", "UH1", "TH", "ER1", "CH", "?", "OW0", "OW2", "EH2", 
-            "EY2", "UW0", "IH2", "OY1", "AY2", "ZH", "AW2", "EH0", "IY2", "AA2", "AE0", "AH2", "AE2", "AO0", "AO2", 
-            "AY0", "UW2", "UH2", "AA0", "AW0", "EY0", "!", "UH0", "ER2", "OY2", "'", "OY0", "<sos/eos>"
-        ]
-    },
-    "tokenizer": {
-        "g2p_type": "g2p_en_no_space",
-        "token_type": "phn"
-    },
-    "tts_model": {
-        "model_path": "espnet/kan-bayashi_vctk_tts_train_multi_spk_vits_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/full/vits.onnx",
-        "model_type": "VITS"
-    },
-    "vocoder": {
-        "vocoder_type": "not_used"
-    }
-}
+# Hardcoded YAML configuration
+yaml_config = """
+normalize:
+  eps: 1.0e-20
+  norm_means: true
+  norm_vars: true
+  stats_file: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/feats_stats.npz
+  type: gmvn
+  use_normalize: true
+text_cleaner:
+  cleaner_types: tacotron
+token:
+  list:
+  - <blank>
+  - <unk>
+  - AH0
+  - N
+  - T
+  - D
+  - S
+  - R
+  - L
+  - DH
+  - K
+  - Z
+  - IH1
+  - IH0
+  - M
+  - EH1
+  - W
+  - P
+  - AE1
+  - AH1
+  - V
+  - ER0
+  - F
+  - ','
+  - AA1
+  - B
+  - HH
+  - IY1
+  - UW1
+  - IY0
+  - AO1
+  - EY1
+  - AY1
+  - .
+  - OW1
+  - SH
+  - NG
+  - G
+  - ER1
+  - CH
+  - JH
+  - Y
+  - AW1
+  - TH
+  - UH1
+  - EH2
+  - OW0
+  - EY2
+  - AO0
+  - IH2
+  - AE2
+  - AY2
+  - AA2
+  - UW0
+  - EH0
+  - OY1
+  - EY0
+  - AO2
+  - ZH
+  - OW2
+  - AE0
+  - UW2
+  - AH2
+  - AY0
+  - IY2
+  - AW2
+  - AA0
+  - ''''
+  - ER2
+  - UH2
+  - '?'
+  - OY2
+  - '!'
+  - AW0
+  - UH0
+  - OY0
+  - ..
+  - <sos/eos>
+tokenizer:
+  g2p_type: g2p_en_no_space
+  token_type: phn
+tts_model:
+  model_path: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/full/jets.onnx
+  model_type: JETS
+vocoder:
+  vocoder_type: not_used
+"""
 
-# Initialize the ONNX model
+# Parse YAML configuration
+yaml_config_dict = yaml.safe_load(yaml_config)
 
+# Create model
+model = onnxruntime.InferenceSession(
+    "./model.onnx",
+    providers=["CPUExecutionProvider"]
+)
 
 # Create tokenizer
-tokenizer = TTSTokenizer(config["token"]["list"])
+tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
-    """Tokenizes input text."""
-    tokenized_input = tokenizer(text)
-    return tokenized_input
+    """Pre-processes the input text."""
+    logger.info(f"Input text: {text}")
+    try:
+        tokenized_input = tokenizer(text)
+        logger.info(f"Tokenized input: {tokenized_input}")
+        return tokenized_input
+    except Exception as e:
+        logger.error(f"Error during tokenization: {str(e)}")
+        raise
 
-def post_process(output):
-    """Processes model output and saves it as a .wav file."""
-    audio_data = output[0]
-    output_file = "out.wav"
-    sf.write(output_file, audio_data, 22050)
-    return output_file
+def post_process(wav):
+    """Post-processes the generated audio."""
+    logger.info(f"Processing audio file: {wav}")
+    try:
+        audio_data = sf.read(wav)[0]  # Extract only the audio data
+        logger.info(f"Audio duration: {len(audio_data) / 22050:.2f} seconds")
+        return audio_data
+    except Exception as e:
+        logger.error(f"Error reading audio file: {str(e)}")
+        raise
 
+# Main execution
+try:
+    # Tokenize inputs
+    input_text = "Say something here"
+    tokenized_inputs = pre_process(input_text)
 
+    # Generate speech
+    outputs = model.run(None, {"text": tokenized_inputs})
+    
+    # Write to file
+    output_wav = post_process("out1.wav")
 
+    # Save processed audio
+    sf.write("out.wav", output_wav, 22050)
+    logger.info("Audio processing completed successfully.")
 
+except Exception as e:
+    logger.exception(f"An error occurred during audio generation: {str(e)}")
+finally:
+    logger.info("Script execution finished.")
