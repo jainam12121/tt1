@@ -4,7 +4,7 @@ import yaml
 import logging
 from ttstokenizer import TTSTokenizer
 
-# Set up logging
+Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -113,10 +113,10 @@ vocoder:
 yaml_config_dict = yaml.safe_load(yaml_config)
 
 # Create model
-model = onnxruntime.InferenceSession(
-    "./model.onnx",
-    providers=["CPUExecutionProvider"]
-)
+# model = onnxruntime.InferenceSession(
+#     "./model.onnx",
+#     providers=["CPUExecutionProvider"]
+# )
 
 # Create tokenizer
 tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
@@ -144,22 +144,22 @@ def post_process(wav):
         raise
 
 # Main execution
-try:
-    # Tokenize inputs
-    input_text = "Say something here"
-    tokenized_inputs = pre_process(input_text)
+# try:
+#     # Tokenize inputs
+#     input_text = "Say something here"
+#     tokenized_inputs = pre_process(input_text)
 
-    # Generate speech
-    outputs = model.run(None, {"text": tokenized_inputs})
+#     # Generate speech
+#     outputs = model.run(None, {"text": tokenized_inputs})
     
-    # Write to file
-    output_wav = post_process("out1.wav")
+#     # Write to file
+#     output_wav = post_process("out1.wav")
 
-    # Save processed audio
-    sf.write("out.wav", output_wav, 22050)
-    logger.info("Audio processing completed successfully.")
+#     # Save processed audio
+#     sf.write("out.wav", output_wav, 22050)
+#     logger.info("Audio processing completed successfully.")
 
-except Exception as e:
-    logger.exception(f"An error occurred during audio generation: {str(e)}")
-finally:
-    logger.info("Script execution finished.")
+# except Exception as e:
+#     logger.exception(f"An error occurred during audio generation: {str(e)}")
+# finally:
+#     logger.info("Script execution finished.")
