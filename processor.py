@@ -160,7 +160,7 @@
 # finally:
 #     print("Script execution finished.")
 
-import onnxruntime
+# import onnxruntime
 import yaml
 from ttstokenizer import TTSTokenizer
 import numpy as np
