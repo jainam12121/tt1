@@ -69,7 +69,7 @@ input_text = "Say something here"
 processed_input = pre_process(input_text)
 
 # Run the model with the pre-processed input
-outputs = model.run(None, {"text": processed_input, "sids": np.array([22])})
+outputs = model.run(None, {"text": processed_input, "sids": np.array([25])})
 
 # Post-process the output
 output_file = post_process(outputs)
