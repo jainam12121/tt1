@@ -62,14 +62,4 @@ def post_process(output):
     print("Audio written to:", output_file)
     return output_file
 
-# Example input
-input_text = "Say something here"
 
-# Pre-process the input
-processed_input = pre_process(input_text)
-
-# Run the model with the pre-processed input
-outputs = model.run(None, {"text": processed_input, "sids": np.array([25])})
-
-# Post-process the output
-output_file = post_process(outputs)
