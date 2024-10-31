@@ -2,6 +2,7 @@ import onnxruntime
 import soundfile as sf
 import yaml
 from ttstokenizer import TTSTokenizer
+import numpy as np
 
 # Hardcoded YAML configuration
 yaml_config = """
@@ -121,7 +122,7 @@ def pre_process(text):
     #print("Tokenizing input text...")
     tokenized_input = tokenizer(text)
     #print("Tokenized input:", tokenized_input)
-    return tokenized_input
+    return np.array(tokenized_input).astype(np.int64)
 
 def post_process(wav):
     output_file="out.wav"
