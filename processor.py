@@ -108,30 +108,29 @@ vocoder:
 # Parse YAML configuration
 yaml_config_dict = yaml.safe_load(yaml_config)
 
-# Create model
-# model = onnxruntime.InferenceSession(
-#     "./model.onnx",
-#     providers=["CPUExecutionProvider"]
-# )
-
 # Create tokenizer
 tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
     """Pre-processes the input text by tokenizing it."""
-    #print("Tokenizing input text...")
+    # Tokenizing input text
     tokenized_input = tokenizer(text)
-    #print("Tokenized input:", tokenized_input)
-    return np.array(tokenized_input).astype(np.int64)
+    
+    # Convert to numpy array of signed integers
+    signed_tokenized_input = np.array(tokenized_input, dtype=np.int64)
+    
+    # Check if the tokenized input is indeed an array of signed integers
+    if not np.issubdtype(signed_tokenized_input.dtype, np.signedinteger):
+        raise ValueError("Input must be an array of signed integers.")
+    
+    return signed_tokenized_input
 
 def post_process(wav):
-    output_file="out.wav"
+    output_file = "out.wav"
     """Processes the model output and saves it as a .wav file."""
-    #print("Saving audio output...")
+    # Save audio output
     sf.write(output_file, wav, 22050)
-    #print(f"Audio saved to {output_file}")
     return wav  # Return the processed audio data
-    # print(f"Audio saved to {output_file}")
 
 # Main execution
 # try:
@@ -140,6 +139,12 @@ def post_process(wav):
 
 #     # Tokenize inputs
 #     tokenized_inputs = pre_process(input_text)
+
+#     # Create model
+#     model = onnxruntime.InferenceSession(
+#     "./model.onnx",
+#     providers=["CPUExecutionProvider"]
+# )
 
 #     # Generate speech
 #     outputs = model.run(None, {"text": tokenized_inputs})
