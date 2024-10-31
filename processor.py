@@ -37,10 +37,7 @@ config = {
 }
 
 # Initialize the ONNX model
-model = onnxruntime.InferenceSession(
-    "./model.onnx",
-    providers=["CPUExecutionProvider"]
-)
+
 
 # Create tokenizer
 tokenizer = TTSTokenizer(config["token"]["list"])
