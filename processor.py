@@ -274,18 +274,20 @@ yaml_config_dict = yaml.safe_load(yaml_config)
 tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
-    """Pre-processes the input text by tokenizing it."""
-    # Tokenizing input text
     tokenized_input = tokenizer(text)
     
     # Convert to numpy array of signed integers
     signed_tokenized_input = np.array(tokenized_input, dtype=np.int64)
-    
+    tokenized_list = list(map(int, signed_tokenized_input))
     # Check if the tokenized input is indeed an array of signed integers
     if not np.issubdtype(signed_tokenized_input.dtype, np.signedinteger):
         raise ValueError("Input must be an array of signed integers.")
     
-    return signed_tokenized_input
+    # Debug: Print tokenized input and shape
+    # print("Tokenized input:", tokenized_list)
+    # print("Tokenized input shape:", tokenized_list.shape)
+    
+    return tokenized_list
 
 def post_process(wav):
     output_file = "out.wav"
