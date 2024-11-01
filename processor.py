@@ -274,20 +274,20 @@ from scipy.io.wavfile import write  # Importing write from scipy
 # tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
-    tokenized_input = tokenizer(text)
+    # tokenized_input = tokenizer(text)
     
-    # Convert to numpy array of signed integers
-    signed_tokenized_input = np.array(tokenized_input, dtype=np.int64)
-    tokenized_list = list(map(int, signed_tokenized_input))
-    # Check if the tokenized input is indeed an array of signed integers
-    if not np.issubdtype(signed_tokenized_input.dtype, np.signedinteger):
-        raise ValueError("Input must be an array of signed integers.")
+    # # Convert to numpy array of signed integers
+    # signed_tokenized_input = np.array(tokenized_input, dtype=np.int64)
+    # tokenized_list = list(map(int, signed_tokenized_input))
+    # # Check if the tokenized input is indeed an array of signed integers
+    # if not np.issubdtype(signed_tokenized_input.dtype, np.signedinteger):
+    #     raise ValueError("Input must be an array of signed integers.")
     
     # Debug: Print tokenized input and shape
     # print("Tokenized input:", tokenized_list)
     # print("Tokenized input shape:", tokenized_list.shape)
     
-    return tokenized_list
+    return text
 
 def post_process(wav):
     output_file = "out.wav"
