@@ -161,117 +161,117 @@
 #     print("Script execution finished.")
 
 # import onnxruntime
-import yaml
-from ttstokenizer import TTSTokenizer
+# import yaml
+# from ttstokenizer import TTSTokenizer
 import numpy as np
 from scipy.io.wavfile import write  # Importing write from scipy
 
 # Hardcoded YAML configuration
-yaml_config = """
-normalize:
-  eps: 1.0e-20
-  norm_means: true
-  norm_vars: true
-  stats_file: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/feats_stats.npz
-  type: gmvn
-  use_normalize: true
-text_cleaner:
-  cleaner_types: tacotron
-token:
-  list:
-  - <blank>
-  - <unk>
-  - AH0
-  - N
-  - T
-  - D
-  - S
-  - R
-  - L
-  - DH
-  - K
-  - Z
-  - IH1
-  - IH0
-  - M
-  - EH1
-  - W
-  - P
-  - AE1
-  - AH1
-  - V
-  - ER0
-  - F
-  - ','
-  - AA1
-  - B
-  - HH
-  - IY1
-  - UW1
-  - IY0
-  - AO1
-  - EY1
-  - AY1
-  - .
-  - OW1
-  - SH
-  - NG
-  - G
-  - ER1
-  - CH
-  - JH
-  - Y
-  - AW1
-  - TH
-  - UH1
-  - EH2
-  - OW0
-  - EY2
-  - AO0
-  - IH2
-  - AE2
-  - AY2
-  - AA2
-  - UW0
-  - EH0
-  - OY1
-  - EY0
-  - AO2
-  - ZH
-  - OW2
-  - AE0
-  - UW2
-  - AH2
-  - AY0
-  - IY2
-  - AW2
-  - AA0
-  - ''''
-  - ER2
-  - UH2
-  - '?'
-  - OY2
-  - '!'
-  - AW0
-  - UH0
-  - OY0
-  - ..
-  - <sos/eos>
-tokenizer:
-  g2p_type: g2p_en_no_space
-  token_type: phn
-tts_model:
-  model_path: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/full/jets.onnx
-  model_type: JETS
-vocoder:
-  vocoder_type: not_used
-"""
+# yaml_config = """
+# normalize:
+#   eps: 1.0e-20
+#   norm_means: true
+#   norm_vars: true
+#   stats_file: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/feats_stats.npz
+#   type: gmvn
+#   use_normalize: true
+# text_cleaner:
+#   cleaner_types: tacotron
+# token:
+#   list:
+#   - <blank>
+#   - <unk>
+#   - AH0
+#   - N
+#   - T
+#   - D
+#   - S
+#   - R
+#   - L
+#   - DH
+#   - K
+#   - Z
+#   - IH1
+#   - IH0
+#   - M
+#   - EH1
+#   - W
+#   - P
+#   - AE1
+#   - AH1
+#   - V
+#   - ER0
+#   - F
+#   - ','
+#   - AA1
+#   - B
+#   - HH
+#   - IY1
+#   - UW1
+#   - IY0
+#   - AO1
+#   - EY1
+#   - AY1
+#   - .
+#   - OW1
+#   - SH
+#   - NG
+#   - G
+#   - ER1
+#   - CH
+#   - JH
+#   - Y
+#   - AW1
+#   - TH
+#   - UH1
+#   - EH2
+#   - OW0
+#   - EY2
+#   - AO0
+#   - IH2
+#   - AE2
+#   - AY2
+#   - AA2
+#   - UW0
+#   - EH0
+#   - OY1
+#   - EY0
+#   - AO2
+#   - ZH
+#   - OW2
+#   - AE0
+#   - UW2
+#   - AH2
+#   - AY0
+#   - IY2
+#   - AW2
+#   - AA0
+#   - ''''
+#   - ER2
+#   - UH2
+#   - '?'
+#   - OY2
+#   - '!'
+#   - AW0
+#   - UH0
+#   - OY0
+#   - ..
+#   - <sos/eos>
+# tokenizer:
+#   g2p_type: g2p_en_no_space
+#   token_type: phn
+# tts_model:
+#   model_path: imdanboy/ljspeech_tts_train_jets_raw_phn_tacotron_g2p_en_no_space_train.total_count.ave/full/jets.onnx
+#   model_type: JETS
+# vocoder:
+#   vocoder_type: not_used
+# """
 
-# Parse YAML configuration
-yaml_config_dict = yaml.safe_load(yaml_config)
+# # Parse YAML configuration
+# yaml_config_dict = yaml.safe_load(yaml_config)
 
 # Create tokenizer
-tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
+# tokenizer = TTSTokenizer(yaml_config_dict["token"]["list"])
 
 def pre_process(text):
     tokenized_input = tokenizer(text)
